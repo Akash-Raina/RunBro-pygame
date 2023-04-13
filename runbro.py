@@ -9,6 +9,11 @@ pygame.display.set_caption("RunBro")
 ground_surface = pygame.image.load("Graphics/ground.png").convert()
 sky_surface = pygame.image.load("Graphics/Sky.png").convert()
 
+# Title
+title_font = pygame.font.Font("Font/Pixeltype.ttf", 65)
+title_surface = title_font.render("RunBro", False, (64, 64, 64))
+title_rect = title_surface.get_rect(center = (400, 80))
+
 # Player_surface
 player_surface = pygame.image.load("Graphics/Player/player_stand.png").convert_alpha()
 player_rect = player_surface.get_rect(midbottom = (100, 300))
@@ -30,6 +35,10 @@ while(True):
     # Background_surface
     screen.blit(sky_surface, (0,0))
     screen.blit(ground_surface, (0, 300))
+
+    # Title_surface 
+    pygame.draw.rect(screen,'#c0e8ec', title_rect)
+    screen.blit(title_surface, title_rect)
 
     # Player_surface
     screen.blit(player_surface, player_rect)
