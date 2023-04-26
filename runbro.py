@@ -17,6 +17,7 @@ title_rect = title_surface.get_rect(center = (400, 80))
 # Player_surface
 player_surface = pygame.image.load("Graphics/Player/player_stand.png").convert_alpha()
 player_rect = player_surface.get_rect(midbottom = (100, 300))
+player_gravity = 0
 
 # Snail_surface 
 snail_surface = pygame.image.load("Graphics/Snail/snail1.png").convert_alpha()
@@ -32,6 +33,16 @@ while(True):
             pygame.quit()
             exit()
 
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if player_rect.collidepoint(event.pos):
+                if player_rect.bottom >= 300:
+                    player_gravity = -20
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                if player_rect.bottom >= 300:
+                    player_gravity = -20
+
+
     # Background_surface
     screen.blit(sky_surface, (0,0))
     screen.blit(ground_surface, (0, 300))
@@ -41,9 +52,15 @@ while(True):
     screen.blit(title_surface, title_rect)
 
     # Player_surface
+    player_gravity += 1
+    player_rect.y += player_gravity
+    if player_rect.bottom >= 300: player_rect.bottom = 300
     screen.blit(player_surface, player_rect)
 
     # Snail_surface
+    snail_rect.x -= 3
+    if snail_rect.right <= 0:
+        snail_rect.left = 800
     screen.blit(snail_surface,snail_rect)
 
     pygame.display.update()
