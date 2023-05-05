@@ -1,5 +1,6 @@
 import pygame
 from sys import exit
+from random import randint
 
 def displaytime(): 
     current = pygame.time.get_ticks() - start_time
@@ -7,6 +8,25 @@ def displaytime():
     title_rect = title_surface.get_rect(center = (400, 80))
     screen.blit(title_surface, title_rect)
     return current
+
+def enemy_movement(enemy_list):
+    if enemy_list:
+        for enemy in enemy_list:
+            enemy.x -= 5
+            if enemy.bottom == 300: screen.blit(snail_surface, enemy)
+            else: screen.blit(fly_surface, enemy)
+
+        enemy_list = [eneemy for eneemy in enemy_list if eneemy.x > -100]
+        return enemy_list
+    else : return []
+
+def collisions(player_pos, collision_list):
+
+    if enemy_list:
+        for collision in collision_list:
+            if player_pos.colliderect(collision): return False
+    return True
+
 
 pygame.init()
 screen = pygame.display.set_mode((800, 400))
@@ -28,9 +48,14 @@ player_surface = pygame.image.load("Graphics/Player/player_stand.png").convert_a
 player_rect = player_surface.get_rect(midbottom = (100, 300))
 player_gravity = 0
 
-# Snail_surface 
-snail_surface = pygame.image.load("Graphics/Snail/snail1.png").convert_alpha()
-snail_rect = snail_surface.get_rect(midbottom = (600, 300))
+# Enemy_surface 
+snail_surface = pygame.image.load("Graphics/Snail/snail1.png").convert_alpha()  
+fly_surface = pygame.image.load("Graphics/Fly/Fly1.png").convert_alpha()
+enemy_list = []
+
+# Timer
+event_timer = pygame.USEREVENT + 1
+pygame.time.set_timer(event_timer, 1500)
 
 # Intro Screen
 player_stand = pygame.image.load("Graphics/Player/player_stand.png").convert_alpha()
@@ -57,6 +82,10 @@ while(True):
 
         if game_active:
 
+            if event.type == event_timer:
+                if randint(0,2): enemy_list.append(snail_surface.get_rect(midbottom = (randint(900, 1100), 300)))
+                else: enemy_list.append(fly_surface.get_rect(midbottom = (randint(900, 1100), 210)))
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if player_rect.collidepoint(event.pos):
                     if player_rect.bottom >= 300:
@@ -68,7 +97,6 @@ while(True):
         else:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 game_active = True
-                snail_rect.x = 800
                 start_time = pygame.time.get_ticks()
 
     if game_active:
@@ -87,16 +115,20 @@ while(True):
         if player_rect.bottom >= 300: player_rect.bottom = 300
         screen.blit(player_surface, player_rect)
 
-        # Snail_surface
-        snail_rect.x -= 4.25
-        if snail_rect.right <= 0:
-            snail_rect.left = 800
-        screen.blit(snail_surface,snail_rect)
+        # Enemy Movement
+        enemy_list = enemy_movement(enemy_list)
 
-        if player_rect.colliderect(snail_rect):
-            game_active = False       
+        # Collision
+        game_active = collisions(player_rect, enemy_list)
+         
     
     else:
+
+        # Restart
+        enemy_list.clear()
+        player_rect.midbottom = (80,300)
+        player_gravity = 0
+        
         # Bg-color
         screen.fill((94, 129, 162))
 
